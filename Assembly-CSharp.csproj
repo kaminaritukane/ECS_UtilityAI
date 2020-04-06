@@ -63,9 +63,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\ActionScoreSystem.cs" />
-    <Compile Include="Assets\Script\CatEntityAuthoring.cs" />
-    <Compile Include="Assets\Script\ComponentsDefinition.cs" />
+    <Compile Include="Assets\Script\Components\CatEntityAuthoring.cs" />
+    <Compile Include="Assets\Script\Components\ComponentsDefinition.cs" />
+    <Compile Include="Assets\Script\Systems\ActionScoreSystem.cs" />
+    <Compile Include="Assets\Script\Systems\ActionSelectionSystem.cs" />
+    <Compile Include="Assets\Script\Systems\EatActionSystem.cs" />
+    <Compile Include="Assets\Script\Systems\PlayActionSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Unity.Timeline.Editor">
