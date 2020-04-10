@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
 
 public class ActionScoreSystem : SystemBase
 {
@@ -8,26 +11,47 @@ public class ActionScoreSystem : SystemBase
     {
         //>> Calculate scores
         // TODO: To emplement the curves to the scorer of each action
-        Entities.ForEach((ref EatScore eatScore, in Cat cat) =>
+        Entities.ForEach((ref EatScorer eatScore, in Cat cat) =>
         {
-            if ( cat.action == ActionType.Eat )
+            if (cat.action == ActionType.Eat)
             {
-                eatScore.score = cat.hunger <= float.Epsilon ? 0 : 100;
+                // once it starts to eat, it will not stop until it's full
+                eatScore.score = cat.hunger <= float.Epsilon ? 0f : 1f;
             }
             else
             {
-                eatScore.score = cat.hunger;
+                var input = math.clamp(cat.hunger * 0.01f, 0f, 1f);
+                eatScore.score = ResponseCurve.Exponentional(input, 2f);
             }
         }).ScheduleParallel();
 
-        //Entities.ForEach((ref SleepScore sleepScore, in Cat cat) =>
-        //{
-        //    sleepScore.score = cat.tiredness;
-        //}).ScheduleParallel();
-
-        Entities.ForEach((ref PlayScore playScore, in Cat cat) =>
+        Entities.ForEach((ref SleepScorer sleepScore, in Cat cat) =>
         {
-            playScore.score = 100 - cat.hunger;
+            if (cat.action == ActionType.Sleep)
+            {
+                // once it starts to sleep, it will not awake until it have enough rest
+                sleepScore.score = cat.tiredness <= float.Epsilon ? 0f : 1f;
+            }
+            else
+            {
+                var input = math.clamp(cat.tiredness * 0.01f, 0f, 1f);
+                sleepScore.score = ResponseCurve.RaiseFastToSlow(input, 4);
+            }
+        }).ScheduleParallel();
+
+        Entities.ForEach((ref PlayScorer playScore, in Cat cat) =>
+        {
+            // The play scorer has two considerations
+            // The cat will play when it feels neigher hungry nor tired
+            // Let's say it hate tired more(love to sleep), so the sleep consideration get more weight
+            // sleep weight: 0.6, eat weight: 0.4
+
+            var eatConcern = ResponseCurve.Exponentional(math.clamp(cat.hunger * 0.01f, 0f, 1f));
+            var sleepConcern = ResponseCurve.RaiseFastToSlow(math.clamp(cat.tiredness * 0.01f, 0f, 1f));
+            
+            var concernBothersPlaying = sleepConcern * 0.6f + eatConcern * 0.4f;
+
+            playScore.score = math.clamp(1f - concernBothersPlaying, 0f, 1f);
         }).ScheduleParallel();
         //<<
 

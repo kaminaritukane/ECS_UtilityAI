@@ -21,9 +21,9 @@ public class ActionSelectionSystem : SystemBase
         Entities.ForEach((Entity entity,
             int entityInQueryIndex,
             ref Cat cat,
-            in EatScore eatScore,
-            //in SleepScore sleepScore,
-            in PlayScore playScore) =>
+            in EatScorer eatScore,
+            in SleepScorer sleepScore,
+            in PlayScorer playScore) =>
         {
             float highestScore = 0.0f;
             ActionType actionToDo = ActionType.Play;
@@ -32,11 +32,11 @@ public class ActionSelectionSystem : SystemBase
                 highestScore = eatScore.score;
                 actionToDo = ActionType.Eat;
             }
-            //if ( sleepScore.score > highestScore )
-            //{
-            //    highestScore = sleepScore.score;
-            //    actionToDo = ActionType.Sleep;
-            //}
+            if (sleepScore.score > highestScore)
+            {
+                highestScore = sleepScore.score;
+                actionToDo = ActionType.Sleep;
+            }
             if (playScore.score > highestScore)
             {
                 highestScore = playScore.score;
@@ -50,7 +50,7 @@ public class ActionSelectionSystem : SystemBase
                 switch (actionToDo)
                 {
                     case ActionType.Eat:
-                        //ecb.RemoveComponent<SleepAction>(entityInQueryIndex, entity);
+                        ecb.RemoveComponent<SleepAction>(entityInQueryIndex, entity);
                         ecb.RemoveComponent<PlayAction>(entityInQueryIndex, entity);
                         ecb.AddComponent<EatAction>(entityInQueryIndex, entity);
                         ecb.SetComponent(entityInQueryIndex, entity, new EatAction()
@@ -58,18 +58,23 @@ public class ActionSelectionSystem : SystemBase
                             hungerRecoverPerSecond = 5.0f
                         });
                         break;
-                    //case ActionType.Sleep:
-                    //    ecb.RemoveComponent<EatAction>(entityInQueryIndex, entity);
-                    //    ecb.RemoveComponent<PlayAction>(entityInQueryIndex, entity);
-                    //    ecb.AddComponent<SleepAction>(entityInQueryIndex, entity);
-                    //    break;
+                    case ActionType.Sleep:
+                        ecb.RemoveComponent<EatAction>(entityInQueryIndex, entity);
+                        ecb.RemoveComponent<PlayAction>(entityInQueryIndex, entity);
+                        ecb.AddComponent<SleepAction>(entityInQueryIndex, entity);
+                        ecb.SetComponent(entityInQueryIndex, entity, new SleepAction()
+                        {
+                            tirednessRecoverPerSecond = 3.0f
+                        });
+                        break;
                     case ActionType.Play:
                         ecb.RemoveComponent<EatAction>(entityInQueryIndex, entity);
-                        //ecb.RemoveComponent<SleepAction>(entityInQueryIndex, entity);
+                        ecb.RemoveComponent<SleepAction>(entityInQueryIndex, entity);
                         ecb.AddComponent<PlayAction>(entityInQueryIndex, entity);
                         ecb.SetComponent(entityInQueryIndex, entity, new PlayAction()
                         {
-                            hungerCostPerSecond = 5.0f
+                            hungerCostPerSecond = 2.0f,
+                            tirednessCostPerSecond = 4.0f
                         });
                         break;
                 }

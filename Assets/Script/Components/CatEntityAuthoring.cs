@@ -7,11 +7,11 @@ public class CatEntityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
     {
         dstManager.AddComponentData(entity, new Cat() { 
             hunger = 0, 
-            //tiredness = 0, 
+            tiredness = 0, 
             action = ActionType.Null
         });
-        dstManager.AddComponentData(entity, new EatScore()); ;
-        //dstManager.AddComponentData(entity, new SleepScore() { score = 0 });
-        dstManager.AddComponentData(entity, new PlayScore());
+        dstManager.AddComponentData(entity, new EatScorer()); ;
+        dstManager.AddComponentData(entity, new SleepScorer());
+        dstManager.AddComponentData(entity, new PlayScorer());
     }
 }

@@ -11,6 +11,7 @@ public class PlayActionSystem : SystemBase
             in PlayAction playAct) =>
         {
             cat.hunger += playAct.hungerCostPerSecond * deltaTime;
+            cat.tiredness += playAct.tirednessCostPerSecond * deltaTime;
             //Debug.Log($"Playing hunger: {cat.hunger}");
         }).ScheduleParallel();
     }
