@@ -1,7 +1,8 @@
-﻿using System;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Jobs;
 
+[DisableAutoCreation]
+[UpdateInGroup(typeof(AISystemGroup))]
 [UpdateAfter(typeof(ActionScoreSystem))]
 public class ActionSelectionSystem : SystemBase
 {

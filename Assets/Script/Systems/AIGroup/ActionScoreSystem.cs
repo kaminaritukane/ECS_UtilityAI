@@ -5,6 +5,8 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
+[DisableAutoCreation]
+[UpdateInGroup(typeof(AISystemGroup))]
 public class ActionScoreSystem : SystemBase
 {
     protected override void OnUpdate()
