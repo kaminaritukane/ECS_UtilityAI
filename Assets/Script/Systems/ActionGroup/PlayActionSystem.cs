@@ -10,13 +10,14 @@ public class PlayActionSystem : SystemBase
     {
         float deltaTime = Time.DeltaTime;
 
-        Entities.ForEach((ref Cat cat,
+        Entities.ForEach((ref Hungriness hunger,
+            ref Tiredness tired,
             in PlayAction playAct) =>
         {
-            cat.hunger = math.clamp(
-                cat.hunger + playAct.hungerCostPerSecond * deltaTime, 0f, 100f);
-            cat.tiredness = math.clamp(
-                cat.tiredness + playAct.tirednessCostPerSecond * deltaTime, 0f, 100f);
+            hunger.value = math.clamp(
+                hunger.value + playAct.hungerCostPerSecond * deltaTime, 0f, 100f);
+            tired.value = math.clamp(
+                tired.value + playAct.tirednessCostPerSecond * deltaTime, 0f, 100f);
         }).ScheduleParallel();
     }
 }

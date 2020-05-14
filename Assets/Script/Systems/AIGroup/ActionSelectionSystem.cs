@@ -21,7 +21,7 @@ public class ActionSelectionSystem : SystemBase
         var ecb = endSimulationEcbSystem.CreateCommandBuffer().ToConcurrent();
         Entities.ForEach((Entity entity,
             int entityInQueryIndex,
-            ref Cat cat,
+            ref Decision decision,
             in EatScorer eatScore,
             in SleepScorer sleepScore,
             in PlayScorer playScore) =>
@@ -44,9 +44,9 @@ public class ActionSelectionSystem : SystemBase
                 actionToDo = ActionType.Play;
             }
 
-            if (cat.action != actionToDo)
+            if (decision.action != actionToDo)
             {
-                cat.action = actionToDo;
+                decision.action = actionToDo;
 
                 switch (actionToDo)
                 {
@@ -56,7 +56,8 @@ public class ActionSelectionSystem : SystemBase
                         ecb.AddComponent<EatAction>(entityInQueryIndex, entity);
                         ecb.SetComponent(entityInQueryIndex, entity, new EatAction()
                         {
-                            hungerRecoverPerSecond = 5.0f
+                            hungerRecoverPerSecond = 5.0f,
+                            tirednessCostPerSecond = 2.0f
                         });
                         break;
                     case ActionType.Sleep:
@@ -65,7 +66,8 @@ public class ActionSelectionSystem : SystemBase
                         ecb.AddComponent<SleepAction>(entityInQueryIndex, entity);
                         ecb.SetComponent(entityInQueryIndex, entity, new SleepAction()
                         {
-                            tirednessRecoverPerSecond = 3.0f
+                            tirednessRecoverPerSecond = 3.0f,
+                            hungerCostPerSecond = 0.5f
                         });
                         break;
                     case ActionType.Play:
